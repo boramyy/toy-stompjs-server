@@ -1,32 +1,51 @@
 
 const express = require("express");
-const WebSocket = require('ws');
-const { Stomp } = require('@stomp/stompjs');
+const WebSocketServer = require("ws").Server;
 
-const SERVER_PORT = 3001;
-const SOCKET_URL = "ws://localhost:15674/ws";
+const SERVER_PORT = 3000;
+const SOCKET_PORT = 15674;
+
+const webSocketServer = new WebSocketServer({ port: SOCKET_PORT });
+
+
+// const { Stomp } = require('@stomp/stompjs');
+
+// Object.assign(global, { WebSocket: require('websocket').w3cwebsocket });
+// if (typeof TextEncoder !== 'function') {
+  //   const TextEncodingPolyfill = require('text-encoding');
+  //   TextEncoder = TextEncodingPolyfill.TextEncoder;
+//   TextDecoder = TextEncodingPolyfill.TextDecoder;
+// }
+
+// const SOCKET_URL = "ws://localhost:15674/ws";
 
 const app = express();
-const client = Stomp.client(SOCKET_URL);
-console.log(client)
+
+webSocketServer.on("connection", function(ws) {
+  ws.send("Hello! I am a server.");
+  ws.on("message", function(message) {
+    console.log("Received: %s", message);
+  });
+});
+
+// const client = Stomp.client(SOCKET_URL);
+// console.log(Stomp.client)
 // const client = Stomp.overWS(SOCKET_URL);
 
-const headers = {
-  login: 'user123',
-  passcode: 'pw123',
-  // additional header
-  'client-id': 'my-client-id'
-};
+// const headers = {
+//   login: 'user1',
+//   passcode: 'pw123',
+//   'client-id': 'my-client-id'
+// };
 
-const connectCallback = function() {
-  console.log('연결됨')
-};
-const errorCallback = function(error) {
-  // display the error's message header:
-  alert(error.headers.message);
-};
+// const connectCallback = function() {
+//   console.log('연결됨')
+// };
+// const errorCallback = function(error) {
+//   alert(error.headers.message);
+// };
 
-client.connect(headers, connectCallback, errorCallback);
+// client.connect(headers, connectCallback, errorCallback);
 
 app.get("/", (req, res) => {
   const returnData = {
@@ -43,11 +62,12 @@ app.get("/send/:msg", (req, res) => {
     msg: req.params.msg
   }
 
-  client.send("/stomp/test", options, sendData);
+  // webSocketServer.send("/stomp/test", options, sendData);
+  console.log('webSocketServer', webSocketServer)
 
-  res.json({
-    msg: `hello stomp`
-  });
+  // res.json({
+  //   msg: `hello stomp`
+  // });
 });
 
 app.listen(SERVER_PORT, () =>

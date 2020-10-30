@@ -45,10 +45,27 @@
 ## stomp 설치
 
 ```shell
-  $ npm i @stomp/stompjs websocket --save
+  $ npm i @stomp/stompjs websocket
+```
+
+### node 에서 사용하려면 폴리필 추가 필요
+
+```shell
+  $ npm i text-encoding
+```
+
+``` javascript
+Object.assign(global, { WebSocket: require('websocket').w3cwebsocket }); // (node:74267) UnhandledPromiseRejectionWarning: ReferenceError: WebSocket is not defined  해결
+
+if (typeof TextEncoder !== 'function') {
+  const TextEncodingPolyfill = require('text-encoding');
+  TextEncoder = TextEncodingPolyfill.TextEncoder;
+  TextDecoder = TextEncodingPolyfill.TextDecoder;
+} // (node:74312) UnhandledPromiseRejectionWarning: ReferenceError: TextEncoder is not defined  해결
 ```
 
 ## 참고
 
 - [Express - Hello world 예제](https://expressjs.com/ko/starter/hello-world.html)
 - [STOMP.js Documentation - Using STOMP JS](https://stomp-js.github.io/stomp-websocket/codo/extra/docs-src/Usage.md.html#toc_2)
+- [StompJs v5: Polyfills](https://stomp-js.github.io/guide/stompjs/rx-stomp/ng2-stompjs/pollyfils-for-stompjs-v5.html)
